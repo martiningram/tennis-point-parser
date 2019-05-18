@@ -1,4 +1,4 @@
-from typint import Tuple
+from typing import Tuple
 from .match_state import MatchState, CompletedSet
 from .format_functions import FormatFunctions
 
