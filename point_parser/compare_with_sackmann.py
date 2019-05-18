@@ -38,6 +38,8 @@ def load_sackmann_data(sackmann_csv_file: str,
     data['tny_name'] = data['tny_name'].str.replace(r'\.$', '')
     data['tny_name'] = data['tny_name'].str.replace("'", '')
 
+    data['date'] = pd.to_datetime(data['date'])
+
     if discard_unusual_events:
         data = data[~data.tny_name.str.contains(
             'DavisCup|Hopman|WildcardPlayoff|WildCardPlayoff')]
