@@ -15,6 +15,10 @@ SLAM_FORMATS = {
 
 
 def convert_to_boolean(score_str: str) -> List[bool]:
+    """
+    Converts the pbp string in Jeff Sackmann's dataset to a sequence of
+    "True" and "False" for input into the parser.
+    """
 
     flat_string = score_str.replace(';', '')
     flat_string = flat_string.replace('.', '')
@@ -30,6 +34,17 @@ def convert_to_boolean(score_str: str) -> List[bool]:
 
 def load_sackmann_data(sackmann_csv_file: str,
                        discard_unusual_events: bool = True) -> pd.DataFrame:
+    """
+    Loads Jeff's data into a DataFrame.
+
+    Args:
+        sackmann_csv_file: Path to the csv with Jeff's data.
+        discard_unusual_events: If True, discards Davis Cup, Hopman Cup,
+            and Wildcard Playoffs [recommended].
+
+    Returns:
+        A DataFrame with the contents of the CSV.
+    """
 
     data = pd.read_csv(sackmann_csv_file)
     data = data.reset_index()
@@ -52,6 +67,18 @@ def process_match(first_server: str,
                   sackmann_str: str,
                   format_functions: FormatFunctions) \
         -> List[MatchState]:
+    """
+    Parses one match from Jeff's data.
+
+    Args:
+        first_server: The first server in the match.
+        first_returner: The first returner in the match.
+        sackmann_str: The coded string from Jeff's data.
+        format_functions: The format of the match.
+
+    Returns:
+        A list of MatchStates, one for each point of the match.
+    """
 
     win_loss = convert_to_boolean(sackmann_str)
 
@@ -64,6 +91,16 @@ def process_match(first_server: str,
 
 def validate_against_sackmann_score(final_match_state: MatchState,
                                     sackmann_score: str) -> bool:
+    """
+    Compares the parsed score against the one in Jeff's dataset.
+
+    Args:
+        final_match_state: The final parsed state.
+        sackmann_score: The string score in Jeff's dataset.
+
+    Returns:
+        True if scores match, False if not.
+    """
 
     matches_sack = (
         match_summary_string(final_match_state, score_only=True) ==
@@ -73,6 +110,18 @@ def validate_against_sackmann_score(final_match_state: MatchState,
 
 
 def validate_all(sackmann_df: pd.DataFrame) -> List[Dict[str, Any]]:
+    """
+    Checks all matches in the DataFrame against their parsed results.
+
+    Args:
+        sackmann_df: The loaded data.
+
+    Returns:
+        A list containing each match which did not parse in the same way as
+        Jeff's parser, as a dictionary with fields "final_state", containing
+        the final parsed state, and "match_tuple", containing Jeff's row
+        in the DataFrame.
+    """
 
     problematic_matches = list()
 

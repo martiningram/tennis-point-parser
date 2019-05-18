@@ -2,6 +2,10 @@ import point_parser.parse as p
 import point_parser.standard_win_functions as swf
 from functools import partial
 
+"""
+This module contains the different match formats.
+"""
+
 classic_slam_format_men = p.FormatFunctions(
     set_win_condition=swf.set_win_condition_ad_final_set,
     is_tiebreak_fun=swf.is_tiebreak_fun_no_tb_final_set,
