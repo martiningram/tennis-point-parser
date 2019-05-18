@@ -2,6 +2,18 @@ from .match_state import MatchState
 
 
 def transform_to_score_format(points_p1: int, points_p2: int) -> str:
+    """
+    Converts the integer representation of points in a service game to the
+    format usual in tennis [e.g. 1-0 to 15:0].
+
+    Args:
+        points_p1: How many points p1 has won in the game.
+        points_p2: How many points p2 has won in the game.
+
+    Returns:
+        A string in the format x:y; for example, "15:0" for points_p1=1 and
+        points_p2=0.
+    """
 
     lookup = {
         0: '0',
@@ -28,6 +40,17 @@ def transform_to_score_format(points_p1: int, points_p2: int) -> str:
 
 def match_summary_string(match_state: MatchState,
                          score_only: bool = False) -> str:
+    """
+    Summarises the match state in the usual scoring format.
+
+    Args:
+        match_state: The current state of the match.
+        score_only: If True, only returns the score, not the names of the
+            server & returner.
+
+    Returns:
+        A summary string, such as "Roger Federer - Rafael Nadal: 0-0 15:30".
+    """
 
     if match_state.is_over:
         # TODO: This isn't great -- they're not server and returner!
