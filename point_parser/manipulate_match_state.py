@@ -1,3 +1,4 @@
+from typint import Tuple
 from .match_state import MatchState, CompletedSet
 from .format_functions import FormatFunctions
 
@@ -136,7 +137,8 @@ def advance_tiebreak(server_won: bool,
     return match_state
 
 
-def get_point_winner_loser(server, returner, server_won):
+def get_point_winner_loser(server: str, returner: str, server_won: bool) \
+        -> Tuple[str, str]:
     """
     A simple utility function returning point winner and loser given whether
     the server or returner won.
