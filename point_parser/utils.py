@@ -99,6 +99,17 @@ def match_summary_string(match_state: MatchState,
 
 def create_start_match_state(first_server: str, first_returner: str,
                              is_tiebreak: bool = False) -> MatchState:
+    """
+    Initialises the starting match state.
+
+    Args:
+        first_server: Player to serve first in the match.
+        first_returner: Player to return first in the match.
+        is_tiebreak: Whether or not the match starts in a tiebreak.
+
+    Returns:
+        The starting MatchState.
+    """
 
     return MatchState(
         server=first_server,
