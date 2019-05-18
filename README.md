@@ -84,3 +84,7 @@ Federer': 0, 'Rafael Nadal': 0}, past_sets=[], is_over=False)
 
 The list of match states could then be used to extract more information about
 the match, such as the number of break points.
+
+### Installation
+
+Please run `python setup.py develop` to install the package.
