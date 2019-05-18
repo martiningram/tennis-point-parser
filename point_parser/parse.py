@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import List, Dict, Callable, Tuple, Optional
 from dataclasses import dataclass
 
@@ -40,9 +41,14 @@ class MatchState:
 
         self.cur_set_score = {self.server: 0, self.returner: 0}
 
+    is_over: bool
+
 
 @dataclass
 class FormatFunctions:
+
+    # FIXME: I wish I could name the input args here. Maybe abstract base
+    # classes are the way to go after all?
 
     # TODO: The set win condition might vary by set -- the third bool is the
     # whether it's the final set.
@@ -77,10 +83,12 @@ def player_wins_set(
         ))
 
     if not format_functions.match_over_fun(
-            match_state.cur_set_score[winning_player],
-            match_state.cur_set_score[losing_player]):
+            match_state.sets_won[winning_player],
+            match_state.sets_won[losing_player]):
         match_state.set_num += 1
         match_state.reset_set_score()
+    else:
+        match_state.is_over = True
 
     return match_state
 
@@ -196,10 +204,16 @@ def advance_service_game(server_won: bool,
 
 def process_win_loss_vector(win_loss_vector: List[bool],
                             match_state: MatchState,
-                            format_functions: FormatFunctions):
+                            format_functions: FormatFunctions,
+                            debug_print_each_point: bool = False) \
+        -> List[MatchState]:
 
     if len(win_loss_vector) == 0:
-        return match_state
+        # FIXME: Not sure about the base case... Should it return the initial
+        # state?
+        return []
+
+    assert not match_state.is_over
 
     cur_win_loss = win_loss_vector[0]
 
@@ -211,11 +225,14 @@ def process_win_loss_vector(win_loss_vector: List[bool],
         match_state = advance_service_game(cur_win_loss, match_state,
                                            format_functions)
 
-    print(match_summary_string(match_state))
+    if debug_print_each_point:
+        print(cur_win_loss)
+        print(match_summary_string(match_state))
 
     # Recurse
-    return process_win_loss_vector(win_loss_vector[1:], match_state,
-                                   format_functions)
+    return [match_state] + process_win_loss_vector(
+        win_loss_vector[1:], deepcopy(match_state), format_functions,
+        debug_print_each_point)
 
 
 def create_start_match_state(first_server: str, first_returner: str,
@@ -232,7 +249,8 @@ def create_start_match_state(first_server: str, first_returner: str,
         cur_set_score={first_server: 0, first_returner: 0},
         cur_game_score={first_server: 0, first_returner: 0},
         sets_won={first_server: 0, first_returner: 0},
-        past_sets=list()
+        past_sets=list(),
+        is_over=False
     )
 
 
@@ -261,36 +279,49 @@ def transform_to_score_format(points_p1: int, points_p2: int) -> str:
     return f'{lookup[points_p1]}:{lookup[points_p2]}'
 
 
-def match_summary_string(match_state: MatchState) -> str:
+def match_summary_string(match_state: MatchState,
+                         score_only: bool = False) -> str:
 
-    cur_server, cur_returner = match_state.server, match_state.returner
+    if match_state.is_over:
+        # TODO: This isn't great -- they're not server and returner!
+        # We need to do p1 and p2 instead.
+        winner = max(match_state.sets_won.items(), key=lambda x: x[1])[0]
+        loser = min(match_state.sets_won.items(), key=lambda x: x[1])[0]
+        cur_server, cur_returner = winner, loser
+    else:
+        cur_server, cur_returner = match_state.server, match_state.returner
 
-    string = f'{cur_server} - {cur_returner}: '
+    if not score_only:
+        string = f'{cur_server} - {cur_returner}:'
+    else:
+        string = ''
 
     for cur_set in match_state.past_sets:
 
-        to_add = (f'{cur_set.player_scores[cur_server]}-'
-                  f'{cur_set.player_scores[cur_returner]} ')
+        to_add = (f' {cur_set.player_scores[cur_server]}-'
+                  f'{cur_set.player_scores[cur_returner]}')
 
         if cur_set.tiebreak_score is not None:
 
             min_score = min(cur_set.tiebreak_score.values())
-
-        to_add += f'({min_score}) '
+            to_add += f'({min_score})'
 
         string += to_add
 
+    if match_state.is_over:
+        return string.strip()
+
     # Add current set:
-    string += (f'{match_state.cur_set_score[cur_server]}-'
-               f'{match_state.cur_set_score[cur_returner]} ')
+    string += (f' {match_state.cur_set_score[cur_server]}-'
+               f'{match_state.cur_set_score[cur_returner]}')
 
     # Add current game score
     if match_state.is_tiebreak:
-        string += (f'{match_state.cur_game_score[cur_server]}:'
+        string += (f' {match_state.cur_game_score[cur_server]}:'
                    f'{match_state.cur_game_score[cur_returner]}')
     else:
-        string += transform_to_score_format(
+        string += ' ' + transform_to_score_format(
             match_state.cur_game_score[cur_server],
             match_state.cur_game_score[cur_returner])
 
-    return string
+    return string.strip()
