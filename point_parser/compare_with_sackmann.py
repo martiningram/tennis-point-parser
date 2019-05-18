@@ -1,10 +1,11 @@
 import pandas as pd
 from typing import List, Dict, Any
-from point_parser.parse import (create_start_match_state,
-                                process_win_loss_vector, match_summary_string,
-                                MatchState, FormatFunctions)
-from point_parser.formats import (standard_best_of_three,
-                                  classic_slam_format_men, us_open_format_men)
+from .parse import (create_start_match_state, process_win_loss_vector)
+from .formats import (standard_best_of_three, classic_slam_format_men,
+                      us_open_format_men)
+from .utils import match_summary_string
+from .match_state import MatchState
+from .format_functions import FormatFunctions
 
 SLAM_FORMATS = {
     "GentlemensWimbledonSingles": classic_slam_format_men,
