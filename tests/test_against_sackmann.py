@@ -14,6 +14,7 @@ def test_against_sackmann():
     sack_files = ['pbp_matches_atp_main_current.csv',
                   'pbp_matches_atp_main_archive.csv']
 
+    # TODO: 36 seems high. Check them in detail!
     expected_wrong = [4, 36]
 
     for cur_sack_file, cur_expected in zip(sack_files, expected_wrong):

@@ -99,11 +99,6 @@ def player_wins_game(match_state: MatchState,
                      format_functions: FormatFunctions) \
         -> MatchState:
 
-    games_winner, games_loser = (match_state.cur_game_score[winning_player],
-                                 match_state.cur_game_score[losing_player])
-
-    games_winner += 1
-
     match_state.cur_set_score[winning_player] += 1
     match_state.total_games_played += 1
 
@@ -207,6 +202,8 @@ def process_win_loss_vector(win_loss_vector: List[bool],
                             format_functions: FormatFunctions,
                             debug_print_each_point: bool = False) \
         -> List[MatchState]:
+    # FIXME: Will the result be aligned with the win loss vector?
+    # CHECK!
 
     if len(win_loss_vector) == 0:
         # FIXME: Not sure about the base case... Should it return the initial
