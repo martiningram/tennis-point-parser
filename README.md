@@ -4,6 +4,7 @@
 
 * python 3.7+
 * pandas
+* tqdm
 
 ### Motivation
 

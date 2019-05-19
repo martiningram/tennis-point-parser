@@ -12,10 +12,12 @@ def test_against_sackmann():
                     " repo.")
 
     sack_files = ['pbp_matches_atp_main_current.csv',
-                  'pbp_matches_atp_main_archive.csv']
+                  'pbp_matches_atp_main_archive.csv',
+                  'pbp_matches_wta_main_archive.csv',
+                  'pbp_matches_wta_main_current.csv']
 
     # TODO: 36 seems high. Check them in detail!
-    expected_wrong = [4, 36]
+    expected_wrong = [4, 36, 2, 0]
 
     for cur_sack_file, cur_expected in zip(sack_files, expected_wrong):
 

@@ -1,17 +1,21 @@
 import pandas as pd
+from tqdm import tqdm
 from typing import List, Dict, Any
 from .parse import process_win_loss_vector
-from .formats import (standard_best_of_three, classic_slam_format_men,
-                      us_open_format_men)
 from .utils import match_summary_string, create_start_match_state
 from .match_state import MatchState
 from .format_functions import FormatFunctions
+import point_parser.formats as fmts
 
 SLAM_FORMATS = {
-    "GentlemensWimbledonSingles": classic_slam_format_men,
-    "MensFrenchOpen": classic_slam_format_men,
-    "MensAustralianOpen": classic_slam_format_men,
-    "MensUSOpen": us_open_format_men
+    "GentlemensWimbledonSingles": fmts.classic_slam_format_men,
+    "MensFrenchOpen": fmts.classic_slam_format_men,
+    "MensAustralianOpen": fmts.classic_slam_format_men,
+    "MensUSOpen": fmts.us_open_format_men,
+    "LadiesWimbledonSingles": fmts.classic_slam_format_ladies,
+    "WomensFrenchOpen": fmts.classic_slam_format_ladies,
+    "WomensAustralianOpen": fmts.classic_slam_format_ladies,
+    "WomensUSOpen": fmts.us_open_format_ladies
 }
 
 
@@ -41,7 +45,7 @@ def load_sackmann_data(sackmann_csv_file: str,
     Args:
         sackmann_csv_file: Path to the csv with Jeff's data.
         discard_unusual_events: If True, discards Davis Cup, Hopman Cup,
-            and Wildcard Playoffs [recommended].
+            Fed Cup, Wildcard Playoffs [recommended].
 
     Returns:
         A DataFrame with the contents of the CSV.
@@ -53,12 +57,13 @@ def load_sackmann_data(sackmann_csv_file: str,
     data['tny_name'] = data['tny_name'].str.replace('.html', '')
     data['tny_name'] = data['tny_name'].str.replace(r'\.$', '')
     data['tny_name'] = data['tny_name'].str.replace("'", '')
+    data['tny_name'] = data['tny_name'].str.replace("2013", '')
 
     data['date'] = pd.to_datetime(data['date'])
 
     if discard_unusual_events:
         data = data[~data.tny_name.str.contains(
-            'DavisCup|Hopman|WildcardPlayoff|WildCardPlayoff')]
+            'DavisCup|Hopman|WildcardPlayoff|WildCardPlayoff|FedCup')]
 
     return data
 
@@ -126,12 +131,10 @@ def validate_all(sackmann_df: pd.DataFrame) -> List[Dict[str, Any]]:
 
     problematic_matches = list()
 
-    for cur_match in sackmann_df.itertuples():
+    for cur_match in tqdm(sackmann_df.itertuples()):
 
-        if cur_match.tny_name in SLAM_FORMATS:
-            cur_format = SLAM_FORMATS[cur_match.tny_name]
-        else:
-            cur_format = standard_best_of_three
+        cur_format = SLAM_FORMATS.get(cur_match.tny_name,
+                                      fmts.standard_best_of_three)
 
         try:
             result = process_match(cur_match.server1, cur_match.server2,
