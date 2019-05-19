@@ -1,4 +1,5 @@
 from typing import Tuple
+from copy import deepcopy
 from .match_state import MatchState, CompletedSet
 from .format_functions import FormatFunctions
 
@@ -21,6 +22,8 @@ def player_wins_set(
     Returns:
         The updated MatchState.
     """
+
+    match_state = deepcopy(match_state)
 
     match_state.sets_won[winning_player] += 1
     match_state.past_sets.append(
@@ -59,6 +62,8 @@ def player_wins_game(match_state: MatchState,
     Returns:
         The updated MatchState.
     """
+
+    match_state = deepcopy(match_state)
 
     match_state.cur_set_score[winning_player] += 1
     match_state.total_games_played += 1
@@ -104,6 +109,8 @@ def advance_tiebreak(server_won: bool,
     Returns:
         The updated MatchState.
     """
+
+    match_state = deepcopy(match_state)
 
     # Advance the game score
     if server_won:
@@ -166,6 +173,8 @@ def advance_service_game(server_won: bool,
     Returns:
         The updated MatchState.
     """
+
+    match_state = deepcopy(match_state)
 
     # Advance the game score
     if server_won:

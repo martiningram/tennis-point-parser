@@ -1,9 +1,9 @@
 import pandas as pd
 from typing import List, Dict, Any
-from .parse import (create_start_match_state, process_win_loss_vector)
+from .parse import process_win_loss_vector
 from .formats import (standard_best_of_three, classic_slam_format_men,
                       us_open_format_men)
-from .utils import match_summary_string
+from .utils import match_summary_string, create_start_match_state
 from .match_state import MatchState
 from .format_functions import FormatFunctions
 

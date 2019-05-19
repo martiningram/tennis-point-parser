@@ -1,9 +1,8 @@
-from copy import deepcopy
 from typing import List
 from .match_state import MatchState
 from .format_functions import FormatFunctions
 from .manipulate_match_state import advance_tiebreak, advance_service_game
-from .utils import match_summary_string, create_start_match_state
+from .utils import match_summary_string
 
 
 def process_win_loss_vector(win_loss_vector: List[bool],
@@ -73,5 +72,5 @@ def process_win_loss_vector(win_loss_vector: List[bool],
 
     # Recurse
     return [match_state] + process_win_loss_vector(
-        win_loss_vector[1:], deepcopy(match_state), format_functions,
+        win_loss_vector[1:], match_state, format_functions,
         debug_print_each_point)
