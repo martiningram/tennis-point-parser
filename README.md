@@ -50,7 +50,7 @@ import point_parser.formats as fmts
 import point_parser.parse as p
 import point_parser.utils as utils
 
-states = process_win_loss_vector(
+states = p.process_win_loss_vector(
     sequence,
     utils.create_start_match_state('Roger Federer', 'Rafael Nadal'),
     fmts.standard_best_of_three
